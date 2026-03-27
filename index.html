@@ -3,1033 +3,1044 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nova Hub – Nova Script</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<title>Nova Hub — Scripts & Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Cabinet+Grotesk:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #070709;
-    --surface: #0e0e12;
-    --surface2: #141419;
-    --border: rgba(255,255,255,0.07);
-    --border-bright: rgba(255,255,255,0.12);
-    --accent: #7c6dfa;
-    --accent2: #a78bfa;
-    --accent-glow: rgba(124,109,250,0.25);
-    --text: #e8e8f0;
-    --muted: #6b6b80;
-    --muted2: #4a4a5a;
-    --white: #ffffff;
-    --green: #34d399;
-    --red: #f87171;
-  }
+:root {
+  --bg: #04040a;
+  --bg2: #07070f;
+  --surface: #0b0b17;
+  --surface2: #10101e;
+  --surface3: #161625;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.1);
+  --border3: rgba(255,255,255,0.15);
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  /* Nova = Electric Violet */
+  --nova: #8b5cf6;
+  --nova2: #a78bfa;
+  --nova3: #c4b5fd;
+  --nova-glow: rgba(139,92,246,0.3);
+  --nova-dim: rgba(139,92,246,0.08);
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-  }
+  /* BK = Amber/Gold */
+  --bk: #f59e0b;
+  --bk2: #fbbf24;
+  --bk3: #fcd34d;
+  --bk-glow: rgba(245,158,11,0.3);
+  --bk-dim: rgba(245,158,11,0.08);
 
-  ::selection { background: rgba(124,109,250,0.3); }
+  --text: #e4e4f0;
+  --text2: #a0a0c0;
+  --muted: #5a5a7a;
+  --muted2: #3a3a55;
+  --white: #ffffff;
+  --green: #10b981;
+  --green2: rgba(16,185,129,0.15);
+}
 
-  /* CUSTOM CURSOR */
-  .cursor-dot {
-    width: 6px; height: 6px;
-    background: var(--accent2);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9999;
-    transform: translate(-50%,-50%);
-    transition: transform 0.1s;
-  }
-  .cursor-ring {
-    width: 28px; height: 28px;
-    border: 1px solid rgba(124,109,250,0.4);
-    border-radius: 50%;
-    position: fixed; top: 0; left: 0;
-    pointer-events: none; z-index: 9998;
-    transform: translate(-50%,-50%);
-    transition: all 0.08s ease;
-  }
-  body { cursor: none; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-  /* NOISE */
-  .noise {
-    position: fixed; inset: 0;
-    pointer-events: none; z-index: 9000;
-    opacity: 0.025;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Cabinet Grotesk', sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0;
-    z-index: 500;
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 48px;
-    height: 64px;
-    background: rgba(7,7,9,0.8);
-    backdrop-filter: blur(24px);
-    border-bottom: 1px solid var(--border);
-  }
+/* ─── CUSTOM CURSOR ─── */
+#cur-dot {
+  position: fixed; width: 5px; height: 5px;
+  border-radius: 50%; background: var(--nova3);
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+}
+#cur-ring {
+  position: fixed; width: 32px; height: 32px;
+  border-radius: 50%; border: 1px solid rgba(139,92,246,0.35);
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: width .25s, height .25s, border-color .25s;
+}
+body { cursor: none; }
 
-  .logo {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    color: var(--white);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .logo-dot {
-    width: 8px; height: 8px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 12px var(--accent);
-    animation: pulse 2.5s ease infinite;
-  }
-  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+/* ─── GRAIN ─── */
+.grain {
+  position: fixed; inset: 0; z-index: 8000; pointer-events: none; opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
 
-  .nav-right { display: flex; align-items: center; gap: 32px; }
-  .nav-link {
-    font-size: 14px;
-    color: var(--muted);
-    text-decoration: none;
-    font-weight: 500;
-    transition: color 0.2s;
-    letter-spacing: -0.1px;
-  }
-  .nav-link:hover { color: var(--text); }
+/* ─── ORBS ─── */
+.orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(120px); pointer-events: none;
+}
 
-  .discord-btn {
-    display: flex; align-items: center; gap: 8px;
-    padding: 9px 18px;
-    background: rgba(124,109,250,0.12);
-    border: 1px solid rgba(124,109,250,0.3);
-    border-radius: 8px;
-    color: var(--accent2);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    transition: all 0.2s;
-    letter-spacing: -0.1px;
-  }
-  .discord-btn:hover {
-    background: rgba(124,109,250,0.2);
-    border-color: rgba(124,109,250,0.5);
-    color: var(--white);
-  }
-  .discord-icon { font-size: 16px; }
+/* ─── NAV ─── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 52px;
+  background: rgba(4,4,10,0.75);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
 
-  /* HERO */
-  .hero {
-    min-height: 100vh;
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-    overflow: hidden;
-    padding-top: 64px;
-  }
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800; font-size: 18px;
+  color: var(--white); letter-spacing: -0.5px;
+  text-decoration: none;
+}
+.logo-badge {
+  width: 28px; height: 28px; border-radius: 7px;
+  background: linear-gradient(135deg, var(--nova), var(--nova2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: white;
+  box-shadow: 0 0 16px var(--nova-glow);
+}
 
-  /* BG GRADIENT */
-  .hero-bg {
-    position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(124,109,250,0.12) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 80% 60%, rgba(167,139,250,0.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
+.nav-links {
+  display: flex; align-items: center; gap: 36px;
+}
+.nav-link {
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  text-decoration: none; transition: color .2s;
+  letter-spacing: -0.1px;
+}
+.nav-link:hover { color: var(--text); }
 
-  /* GRID */
-  .hero-grid {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(rgba(124,109,250,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(124,109,250,0.04) 1px, transparent 1px);
-    background-size: 48px 48px;
-    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 80%);
-  }
+.nav-cta {
+  padding: 8px 20px;
+  border-radius: 8px;
+  background: rgba(139,92,246,0.12);
+  border: 1px solid rgba(139,92,246,0.25);
+  color: var(--nova2); font-size: 13px; font-weight: 700;
+  text-decoration: none; transition: all .2s;
+  display: flex; align-items: center; gap: 6px;
+  letter-spacing: -0.1px;
+}
+.nav-cta:hover {
+  background: rgba(139,92,246,0.2);
+  border-color: rgba(139,92,246,0.45);
+  color: var(--white);
+}
 
-  .hero-content {
-    position: relative; z-index: 2;
-    text-align: center;
-    max-width: 800px;
-    padding: 0 24px;
-  }
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 100px 24px 60px;
+  position: relative; overflow: hidden;
+}
 
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 5px 14px;
-    background: rgba(124,109,250,0.08);
-    border: 1px solid rgba(124,109,250,0.2);
-    border-radius: 100px;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--accent2);
-    letter-spacing: 0.3px;
-    margin-bottom: 28px;
-    font-family: 'JetBrains Mono', monospace;
-    animation: fadeUp 0.6s ease forwards; opacity: 0;
-  }
-  .badge-dot {
-    width: 5px; height: 5px;
-    background: var(--green);
-    border-radius: 50%;
-    animation: pulse 2s infinite;
-  }
+.hero-orb-1 {
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 65%);
+  top: -200px; left: 50%; transform: translateX(-50%);
+}
+.hero-orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(245,158,11,0.1) 0%, transparent 70%);
+  bottom: 0; right: 10%;
+}
 
-  .hero-title {
-    font-size: clamp(52px, 9vw, 108px);
-    font-weight: 900;
-    line-height: 1;
-    letter-spacing: -3px;
-    color: var(--white);
-    animation: fadeUp 0.6s 0.1s ease forwards; opacity: 0;
-  }
-  .hero-title .grad {
-    background: linear-gradient(135deg, var(--accent2) 0%, #c4b5fd 50%, var(--accent) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+/* Grid lines */
+.hero-grid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(139,92,246,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(139,92,246,0.035) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 85% 85% at 50% 40%, black 20%, transparent 80%);
+}
 
-  .hero-sub {
-    font-size: 18px;
-    color: var(--muted);
-    font-weight: 400;
-    margin-top: 20px;
-    line-height: 1.6;
-    max-width: 540px;
-    margin-left: auto; margin-right: auto;
-    letter-spacing: -0.2px;
-    animation: fadeUp 0.6s 0.2s ease forwards; opacity: 0;
-  }
-  .hero-sub strong { color: var(--text); font-weight: 600; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 14px;
+  border: 1px solid rgba(139,92,246,0.22);
+  background: rgba(139,92,246,0.07);
+  border-radius: 100px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 1.5px; color: var(--nova2);
+  text-transform: uppercase;
+  margin-bottom: 32px;
+  opacity: 0; animation: rise .7s .1s ease forwards;
+}
+.live-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:.3} }
 
-  .hero-cta {
-    margin-top: 40px;
-    display: flex; gap: 12px; justify-content: center;
-    animation: fadeUp 0.6s 0.3s ease forwards; opacity: 0;
-  }
+.hero-h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(60px, 10vw, 130px);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -4px;
+  color: var(--white);
+  opacity: 0; animation: rise .7s .2s ease forwards;
+  margin-bottom: 6px;
+}
+.hero-h1 em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--nova3) 0%, var(--nova2) 40%, var(--nova) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-h1-sub {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(60px, 10vw, 130px);
+  font-weight: 800;
+  line-height: .95;
+  letter-spacing: -4px;
+  color: var(--muted2);
+  opacity: 0; animation: rise .7s .28s ease forwards;
+  margin-bottom: 32px;
+}
 
-  .btn-main {
-    padding: 14px 32px;
-    background: var(--accent);
-    border: none;
-    border-radius: 10px;
-    color: var(--white);
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.2px;
-    text-decoration: none;
-    cursor: none;
-    transition: all 0.2s;
-    box-shadow: 0 0 0 0 var(--accent-glow);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-main:hover {
-    background: var(--accent2);
-    transform: translateY(-1px);
-    box-shadow: 0 8px 30px var(--accent-glow), 0 0 0 1px rgba(124,109,250,0.4);
-  }
+.hero-p {
+  font-size: 17px; color: var(--text2); line-height: 1.65;
+  max-width: 560px; margin: 0 auto 44px;
+  font-weight: 400; letter-spacing: -0.1px;
+  opacity: 0; animation: rise .7s .36s ease forwards;
+}
+.hero-p strong { color: var(--text); font-weight: 700; }
 
-  .btn-ghost {
-    padding: 14px 28px;
-    background: transparent;
-    border: 1px solid var(--border-bright);
-    border-radius: 10px;
-    color: var(--muted);
-    font-size: 15px;
-    font-weight: 500;
-    text-decoration: none;
-    cursor: none;
-    transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.hero-btns {
+  display: flex; gap: 12px; justify-content: center;
+  opacity: 0; animation: rise .7s .44s ease forwards;
+  flex-wrap: wrap;
+}
 
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.btn-primary {
+  padding: 14px 32px;
+  background: var(--nova);
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 15px; font-weight: 700;
+  letter-spacing: -.2px; cursor: none;
+  text-decoration: none; transition: all .2s;
+  display: inline-flex; align-items: center; gap: 8px;
+  box-shadow: 0 0 30px rgba(139,92,246,0);
+}
+.btn-primary:hover {
+  background: var(--nova2);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px var(--nova-glow);
+}
 
-  /* TRUST BAR */
-  .trust-bar {
-    display: flex; justify-content: center; align-items: center; gap: 40px;
-    margin-top: 56px;
-    padding-top: 40px;
-    border-top: 1px solid var(--border);
-    animation: fadeUp 0.6s 0.4s ease forwards; opacity: 0;
-  }
-  .trust-item {
-    text-align: center;
-  }
-  .trust-num {
-    font-size: 28px;
-    font-weight: 800;
-    color: var(--white);
-    letter-spacing: -1px;
-    line-height: 1;
-  }
-  .trust-num span { color: var(--accent2); }
-  .trust-label {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-weight: 500;
-    letter-spacing: 0.3px;
-  }
-  .trust-divider {
-    width: 1px; height: 36px;
-    background: var(--border);
-  }
+.btn-outline {
+  padding: 14px 28px;
+  background: transparent;
+  border: 1px solid var(--border3); border-radius: 10px;
+  color: var(--text2); font-size: 15px; font-weight: 600;
+  cursor: none; text-decoration: none; transition: all .2s;
+  display: inline-flex; align-items: center; gap: 8px;
+  letter-spacing: -.1px;
+}
+.btn-outline:hover { border-color: rgba(255,255,255,.25); color: var(--white); }
 
-  /* PRODUCT SECTION */
-  .section {
-    padding: 120px 48px;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+/* stats */
+.hero-stats {
+  display: flex; gap: 0; margin-top: 64px; border-top: 1px solid var(--border);
+  padding-top: 40px;
+  opacity: 0; animation: rise .7s .52s ease forwards;
+}
+.stat {
+  flex: 1; padding: 0 36px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.stat:last-child { border-right: none; }
+.stat-n {
+  font-family: 'Syne', sans-serif;
+  font-size: 36px; font-weight: 800;
+  letter-spacing: -2px; color: var(--white); line-height: 1;
+}
+.stat-n span { color: var(--nova2); }
+.stat-l {
+  font-size: 12px; color: var(--muted); margin-top: 5px;
+  font-family: 'DM Mono', monospace; letter-spacing: .5px;
+}
 
-  .section-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-label::before {
-    content: '';
-    width: 20px; height: 1px;
-    background: var(--accent);
-    display: inline-block;
-  }
+@keyframes rise { from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)} }
 
-  .section-title {
-    font-size: clamp(36px, 5vw, 56px);
-    font-weight: 800;
-    letter-spacing: -2px;
-    color: var(--white);
-    line-height: 1.05;
-  }
-  .section-title .muted { color: var(--muted2); }
+/* ─── TICKER ─── */
+.ticker-wrap {
+  overflow: hidden;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+.ticker-track {
+  display: flex; gap: 56px; white-space: nowrap;
+  animation: tick 20s linear infinite;
+}
+.ticker-item {
+  display: flex; align-items: center; gap: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--muted); flex-shrink: 0;
+}
+.ti-sep { color: var(--nova); font-size: 14px; }
+@keyframes tick { from{transform:translateX(0)}to{transform:translateX(-50%)} }
 
-  /* PRODUCT CARD — single centered card */
-  .product-wrapper {
-    display: flex;
-    justify-content: center;
-    margin-top: 64px;
-  }
+/* ─── SECTIONS ─── */
+.section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 110px 52px;
+}
 
-  .product-card {
-    background: var(--surface);
-    border: 1px solid var(--border-bright);
-    border-radius: 20px;
-    overflow: hidden;
-    width: 100%;
-    max-width: 680px;
-    position: relative;
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,109,250,0.2), 0 0 60px rgba(124,109,250,0.08);
-  }
+.sec-label {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 3px;
+  text-transform: uppercase; color: var(--nova);
+  margin-bottom: 14px;
+}
+.sec-label::after {
+  content: ''; flex: 1; max-width: 40px; height: 1px;
+  background: var(--nova); display: block;
+}
 
-  .card-top-accent {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-  }
+.sec-h {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(38px, 5vw, 60px);
+  font-weight: 800; letter-spacing: -2px;
+  color: var(--white); line-height: 1.02;
+  margin-bottom: 16px;
+}
+.sec-h .dim { color: var(--muted2); }
 
-  .card-inner {
-    padding: 44px;
-  }
+.sec-sub {
+  font-size: 16px; color: var(--text2); max-width: 500px;
+  line-height: 1.6; margin-bottom: 64px;
+}
 
-  .card-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 28px;
-    gap: 20px;
-  }
+/* ─── PRODUCT CARDS ─── */
+.products-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
 
-  .card-badges {
-    display: flex; gap: 8px; flex-wrap: wrap;
-  }
+.pcard {
+  border-radius: 22px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  position: relative;
+  transition: transform .35s, box-shadow .35s;
+}
+.pcard:hover {
+  transform: translateY(-6px);
+}
 
-  .tag {
-    padding: 4px 10px;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 600;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.5px;
-  }
-  .tag-purple { background: rgba(124,109,250,0.15); color: var(--accent2); border: 1px solid rgba(124,109,250,0.25); }
-  .tag-green { background: rgba(52,211,153,0.12); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
-  .tag-orange { background: rgba(251,191,36,0.1); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
+/* Nova card */
+.pcard-nova:hover {
+  box-shadow: 0 28px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(139,92,246,.25), 0 0 80px rgba(139,92,246,.07);
+}
+.pcard-nova .pcard-accent { background: linear-gradient(90deg, transparent 0%, var(--nova) 40%, var(--nova2) 60%, transparent 100%); }
+.pcard-nova .pcard-icon-bg { background: rgba(139,92,246,0.12); }
+.pcard-nova .pcard-icon { color: var(--nova2); }
+.pcard-nova .tag-main { background: rgba(139,92,246,.14); border-color: rgba(139,92,246,.28); color: var(--nova2); }
+.pcard-nova .pcard-price { color: var(--nova3); }
+.pcard-nova .pbuy { background: var(--nova); }
+.pcard-nova .pbuy:hover { background: var(--nova2); box-shadow: 0 8px 28px var(--nova-glow); }
+.pcard-nova .feat-icon { background: rgba(139,92,246,.1); color: var(--nova2); }
+.pcard-nova .pcard-orb { background: radial-gradient(circle, rgba(139,92,246,.12), transparent 65%); }
 
-  .card-price-area { text-align: right; flex-shrink: 0; }
-  .price {
-    font-size: 42px;
-    font-weight: 800;
-    color: var(--white);
-    letter-spacing: -2px;
-    line-height: 1;
-  }
-  .price sup {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0;
-    vertical-align: top;
-    margin-top: 6px;
-    display: inline-block;
-  }
-  .price-note {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 4px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+/* BK card */
+.pcard-bk:hover {
+  box-shadow: 0 28px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(245,158,11,.22), 0 0 80px rgba(245,158,11,.06);
+}
+.pcard-bk .pcard-accent { background: linear-gradient(90deg, transparent 0%, var(--bk) 40%, var(--bk2) 60%, transparent 100%); }
+.pcard-bk .pcard-icon-bg { background: rgba(245,158,11,0.12); }
+.pcard-bk .pcard-icon { color: var(--bk2); }
+.pcard-bk .tag-main { background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.25); color: var(--bk2); }
+.pcard-bk .pcard-price { color: var(--bk3); }
+.pcard-bk .pbuy { background: var(--bk); }
+.pcard-bk .pbuy:hover { background: var(--bk2); box-shadow: 0 8px 28px var(--bk-glow); }
+.pcard-bk .feat-icon { background: rgba(245,158,11,.1); color: var(--bk2); }
+.pcard-bk .pcard-orb { background: radial-gradient(circle, rgba(245,158,11,.1), transparent 65%); }
+.pcard-bk .sec-label { color: var(--bk); }
+.pcard-bk .sec-label::after { background: var(--bk); }
+.pcard-bk .tag-live { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.22); color: var(--green); }
 
-  .card-name {
-    font-size: 30px;
-    font-weight: 800;
-    color: var(--white);
-    letter-spacing: -1px;
-    margin-bottom: 10px;
-  }
-  .card-name span { color: var(--accent2); }
+.pcard-accent { height: 2px; }
+.pcard-orb {
+  position: absolute; width: 300px; height: 300px;
+  border-radius: 50%; top: -60px; right: -60px; pointer-events: none;
+}
 
-  .card-desc {
-    font-size: 15px;
-    color: var(--muted);
-    line-height: 1.65;
-    margin-bottom: 32px;
-    max-width: 500px;
-  }
+.pcard-body { padding: 36px; }
 
-  .features-list {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 36px;
-  }
+.pcard-top {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 26px; gap: 16px;
+}
 
-  .feature {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 14px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    transition: border-color 0.2s;
-  }
-  .feature:hover { border-color: rgba(124,109,250,0.2); }
+.pcard-icon-bg {
+  width: 52px; height: 52px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; flex-shrink: 0;
+}
 
-  .feature-icon-box {
-    width: 30px; height: 30px;
-    background: rgba(124,109,250,0.1);
-    border-radius: 7px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px;
-    flex-shrink: 0;
-  }
+.pcard-meta { flex: 1; }
+.pcard-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px; font-weight: 800;
+  letter-spacing: -1px; color: var(--white);
+  line-height: 1; margin-bottom: 6px;
+}
 
-  .feature-text-box {}
-  .feature-title {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.2px;
-  }
-  .feature-sub {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-    line-height: 1.4;
-  }
+.tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag {
+  padding: 3px 9px; border-radius: 100px;
+  font-size: 10px; font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: .5px; border: 1px solid transparent;
+}
+.tag-live { background: rgba(16,185,129,.1); border-color: rgba(16,185,129,.22); color: var(--green); }
 
-  .card-divider {
-    height: 1px;
-    background: var(--border);
-    margin-bottom: 28px;
-  }
+.pcard-price-box { text-align: right; flex-shrink: 0; }
+.pcard-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 38px; font-weight: 800;
+  letter-spacing: -2px; line-height: 1;
+}
+.pcard-price-note {
+  font-size: 11px; color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  margin-top: 3px;
+}
 
-  .card-footer-row {
-    display: flex; align-items: center; gap: 16px;
-  }
+.pcard-desc {
+  font-size: 14px; color: var(--text2); line-height: 1.7;
+  margin-bottom: 28px; font-weight: 400;
+}
 
-  .buy-btn {
-    flex: 1;
-    padding: 16px;
-    background: var(--accent);
-    border: none;
-    border-radius: 10px;
-    color: var(--white);
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: -0.2px;
-    cursor: none;
-    transition: all 0.2s;
-    text-decoration: none;
-    text-align: center;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-  }
-  .buy-btn:hover {
-    background: var(--accent2);
-    box-shadow: 0 8px 24px var(--accent-glow);
-    transform: translateY(-1px);
-  }
+.feat-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 28px;
+}
 
-  .discord-side {
-    padding: 16px 20px;
-    background: transparent;
-    border: 1px solid var(--border-bright);
-    border-radius: 10px;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: none;
-    transition: all 0.2s;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .discord-side:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+.feat {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px; background: var(--surface2);
+  border: 1px solid var(--border); border-radius: 10px;
+  transition: border-color .2s;
+}
+.feat:hover { border-color: rgba(255,255,255,.1); }
 
-  /* UPDATE TICKER */
-  .update-ticker {
-    background: rgba(52,211,153,0.05);
-    border: 1px solid rgba(52,211,153,0.15);
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-top: 20px;
-    display: flex; align-items: center; gap: 10px;
-  }
-  .ticker-dot {
-    width: 6px; height: 6px;
-    background: var(--green);
-    border-radius: 50%;
-    flex-shrink: 0;
-    animation: pulse 2s infinite;
-  }
-  .ticker-text {
-    font-size: 12px;
-    color: var(--green);
-    font-family: 'JetBrains Mono', monospace;
-  }
+.feat-icon {
+  width: 28px; height: 28px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; flex-shrink: 0;
+}
 
-  /* HIGHLIGHTS / WHY SECTION */
-  .why-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2px;
-    margin-top: 56px;
-  }
+.feat-t { font-size: 12px; font-weight: 700; color: var(--text); letter-spacing: -.1px; }
+.feat-s { font-size: 11px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
 
-  .why-card {
-    padding: 36px 32px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    transition: border-color 0.2s;
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  .why-card.visible {
-    animation: fadeUp 0.5s ease forwards;
-  }
-  .why-card:hover { border-color: rgba(124,109,250,0.2); }
+.pcard-divider { height: 1px; background: var(--border); margin: 20px 0; }
 
-  .why-icon {
-    font-size: 28px;
-    margin-bottom: 18px;
-    display: block;
-  }
-  .why-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: -0.4px;
-    margin-bottom: 10px;
-  }
-  .why-text {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
-  }
+.pcard-footer { display: flex; gap: 10px; align-items: center; }
 
-  /* MARQUEE */
-  .marquee-wrap {
-    padding: 20px 0;
-    overflow: hidden;
-    border-top: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
-    background: var(--surface);
-    margin: 0 -48px;
-  }
-  .marquee-track {
-    display: flex; gap: 48px;
-    white-space: nowrap;
-    animation: marquee 18s linear infinite;
-  }
-  .marquee-item {
-    display: flex; align-items: center; gap: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    font-family: 'JetBrains Mono', monospace;
-    flex-shrink: 0;
-  }
-  .marquee-item .m-dot {
-    width: 4px; height: 4px;
-    background: var(--accent);
-    border-radius: 50%;
-  }
-  @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.pbuy {
+  flex: 1; padding: 14px;
+  border: none; border-radius: 10px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  cursor: none; text-decoration: none; text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .2s; letter-spacing: -.1px;
+}
 
-  /* REVIEWS */
-  .reviews-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-    margin-top: 56px;
-  }
+.pdisc {
+  padding: 14px 18px;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  background: transparent; color: var(--muted);
+  text-decoration: none; font-size: 13px; font-weight: 600;
+  cursor: none; transition: all .2s;
+  display: flex; align-items: center; gap: 7px;
+  white-space: nowrap;
+}
+.pdisc:hover { border-color: var(--border3); color: var(--text); }
 
-  .review {
-    padding: 28px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    opacity: 0;
-    transform: translateY(20px);
-    transition: border-color 0.2s;
-  }
-  .review.visible { animation: fadeUp 0.5s ease forwards; }
-  .review:hover { border-color: rgba(124,109,250,0.15); }
+/* update ticker on card */
+.card-update {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 13px;
+  background: rgba(16,185,129,.05);
+  border: 1px solid rgba(16,185,129,.12);
+  border-radius: 8px; margin-bottom: 20px;
+}
+.cup-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); animation: blink 2s infinite; }
+.cup-text { font-size: 11px; color: var(--green); font-family: 'DM Mono', monospace; }
 
-  .stars {
-    color: var(--accent2);
-    font-size: 13px;
-    letter-spacing: 2px;
-    margin-bottom: 14px;
-  }
-  .review-text {
-    font-size: 14px;
-    color: var(--muted);
-    line-height: 1.65;
-    margin-bottom: 20px;
-    font-style: italic;
-  }
-  .review-author {
-    display: flex; align-items: center; gap: 10px;
-  }
-  .avatar {
-    width: 34px; height: 34px;
-    border-radius: 8px;
-    background: rgba(124,109,250,0.12);
-    border: 1px solid rgba(124,109,250,0.2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-    font-weight: 700;
-    color: var(--accent2);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .author-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .author-tag {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-    font-family: 'JetBrains Mono', monospace;
-  }
+/* ─── WHY SECTION ─── */
+.why-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 100px 0;
+}
+.why-inner { max-width: 1200px; margin: 0 auto; padding: 0 52px; }
 
-  /* CTA */
-  .cta {
-    text-align: center;
-    padding: 120px 48px;
-    position: relative;
-    overflow: hidden;
-  }
-  .cta::before {
-    content: '';
-    position: absolute;
-    width: 600px; height: 600px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(124,109,250,0.1) 0%, transparent 70%);
-    top: 50%; left: 50%;
-    transform: translate(-50%,-50%);
-    pointer-events: none;
-  }
+.why-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 2px; margin-top: 52px;
+}
 
-  .cta-title {
-    font-size: clamp(40px, 6vw, 72px);
-    font-weight: 900;
-    letter-spacing: -2.5px;
-    color: var(--white);
-    position: relative; z-index: 1;
-    margin-bottom: 16px;
-    line-height: 1.05;
-  }
-  .cta-title span {
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  .cta-sub {
-    font-size: 16px;
-    color: var(--muted);
-    position: relative; z-index: 1;
-    margin-bottom: 40px;
-  }
+.why-card {
+  padding: 34px 30px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  opacity: 0; transform: translateY(18px);
+  transition: border-color .2s;
+}
+.why-card.vis { animation: rise .5s ease forwards; }
+.why-card:hover { border-color: rgba(139,92,246,.18); }
 
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 48px;
-    max-width: 1200px;
-    margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
+.why-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 2px; color: var(--nova);
+  margin-bottom: 20px;
+}
+.why-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+.why-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: var(--white); letter-spacing: -.4px; margin-bottom: 9px; }
+.why-text { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
-  .footer-logo {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--white);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .footer-links {
-    display: flex; gap: 24px;
-  }
-  .footer-links a {
-    font-size: 13px;
-    color: var(--muted);
-    text-decoration: none;
-    transition: color 0.2s;
-  }
-  .footer-links a:hover { color: var(--text); }
-  .footer-copy {
-    font-size: 12px;
-    color: var(--muted2);
-    font-family: 'JetBrains Mono', monospace;
-  }
+/* ─── REVIEWS ─── */
+.reviews-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 14px; margin-top: 52px;
+}
 
-  @media (max-width: 768px) {
-    nav { padding: 0 20px; }
-    .nav-right .nav-link { display: none; }
-    .section { padding: 80px 20px; }
-    .why-grid { grid-template-columns: 1fr; gap: 12px; }
-    .reviews-grid { grid-template-columns: 1fr; }
-    .features-list { grid-template-columns: 1fr; }
-    .trust-bar { gap: 20px; flex-wrap: wrap; }
-    .hero-title { letter-spacing: -2px; }
-    footer { flex-direction: column; gap: 20px; }
-    .marquee-wrap { margin: 0 -20px; }
-  }
+.rev {
+  padding: 26px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 14px;
+  opacity: 0; transform: translateY(18px);
+  transition: border-color .2s;
+}
+.rev.vis { animation: rise .5s ease forwards; }
+.rev:hover { border-color: rgba(139,92,246,.14); }
+
+.rev-stars { color: var(--nova2); font-size: 12px; letter-spacing: 2px; margin-bottom: 12px; }
+.rev-text {
+  font-size: 13.5px; color: var(--text2); line-height: 1.65;
+  font-style: italic; margin-bottom: 18px;
+}
+.rev-author { display: flex; align-items: center; gap: 10px; }
+.rev-av {
+  width: 34px; height: 34px; border-radius: 8px;
+  background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+  color: var(--nova2);
+}
+.rev-av.bk-av {
+  background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.18);
+  color: var(--bk2);
+}
+.rev-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.rev-tag { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 1px; }
+
+/* ─── CTA ─── */
+.cta-section {
+  text-align: center;
+  padding: 130px 52px;
+  position: relative; overflow: hidden;
+}
+.cta-orb {
+  position: absolute;
+  width: 800px; height: 800px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,.09) 0%, transparent 65%);
+  top: 50%; left: 50%; transform: translate(-50%,-50%);
+  pointer-events: none;
+}
+.cta-orb2 {
+  position: absolute;
+  width: 400px; height: 400px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,158,11,.06) 0%, transparent 70%);
+  bottom: 20%; right: 15%; pointer-events: none;
+}
+.cta-h {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(44px, 7vw, 88px);
+  font-weight: 800; letter-spacing: -3px;
+  line-height: .98; color: var(--white);
+  position: relative; z-index: 1;
+  margin-bottom: 20px;
+}
+.cta-h em {
+  font-style: normal;
+  background: linear-gradient(120deg, var(--nova3), var(--nova));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cta-h .bk-em {
+  background: linear-gradient(120deg, var(--bk3), var(--bk));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.cta-p { font-size: 16px; color: var(--text2); position: relative; z-index: 1; margin-bottom: 40px; }
+.cta-btns { display: flex; gap: 12px; justify-content: center; position: relative; z-index: 1; flex-wrap: wrap; }
+
+/* ─── FOOTER ─── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 44px 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  max-width: 100%;
+}
+.footer-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px; font-weight: 800; color: var(--white);
+  display: flex; align-items: center; gap: 9px;
+  text-decoration: none;
+}
+.footer-links { display: flex; gap: 26px; }
+.footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color .2s; }
+.footer-links a:hover { color: var(--text); }
+.footer-copy { font-size: 11px; color: var(--muted2); font-family: 'DM Mono', monospace; }
+
+/* ─── RESPONSIVE ─── */
+@media(max-width: 900px) {
+  nav { padding: 0 22px; }
+  .nav-links .nav-link:not(.nav-cta) { display: none; }
+  .section { padding: 70px 22px; }
+  .products-grid { grid-template-columns: 1fr; }
+  .why-grid { grid-template-columns: 1fr 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; gap: 28px; }
+  .stat { border-right: none; border-bottom: 1px solid var(--border); padding: 0 0 20px; }
+  .stat:last-child { border-bottom: none; }
+  footer { flex-direction: column; padding: 32px 22px; gap: 16px; }
+  .why-inner { padding: 0 22px; }
+  .cta-section { padding: 80px 22px; }
+}
+@media(max-width: 600px) {
+  .why-grid { grid-template-columns: 1fr; }
+  .hero-h1, .hero-h1-sub { letter-spacing: -2.5px; }
+}
 </style>
 </head>
 <body>
 
-<div class="noise"></div>
-<div class="cursor-dot" id="cursorDot"></div>
-<div class="cursor-ring" id="cursorRing"></div>
+<div class="grain"></div>
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
 
 <!-- NAV -->
 <nav>
-  <div class="logo">
-    <div class="logo-dot"></div>
+  <a href="#" class="nav-logo">
+    <div class="logo-badge">N</div>
     Nova Hub
-  </div>
-  <div class="nav-right">
-    <a href="#product" class="nav-link">Script</a>
+  </a>
+  <div class="nav-links">
+    <a href="#products" class="nav-link">Scripts</a>
     <a href="#why" class="nav-link">Features</a>
     <a href="#reviews" class="nav-link">Reviews</a>
-    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="discord-btn">
-      <span class="discord-icon">☎</span>
-      Discord
+    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="nav-link nav-cta">
+      💬 Discord
     </a>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="orb hero-orb-1 orb"></div>
+  <div class="orb hero-orb-2 orb"></div>
   <div class="hero-grid"></div>
 
-  <div class="hero-content">
-    <div class="badge">
-      <div class="badge-dot"></div>
-      NOVA SCRIPT — LIVE NOW
+  <div class="hero-eyebrow">
+    <div class="live-dot"></div>
+    TWO SCRIPTS · ONE HUB · TOTAL CONTROL
+  </div>
+
+  <h1 class="hero-h1"><em>Nova Hub</em></h1>
+  <div class="hero-h1-sub"Undetected</div>
+
+  <p class="hero-p">
+    Two <strong>meticulously crafted scripts</strong> for the players who refuse to play fair.
+    Nova Script & BK Hub — constantly updated, always undetected.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#products" class="btn-primary">Explore Scripts →</a>
+    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-outline">💬 Join Discord</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-n">10<span>K+</span></div>
+      <div class="stat-l">PLAYERS</div>
     </div>
-
-    <h1 class="hero-title">
-      The Script<br>
-      <span class="grad">That Breaks Games.</span>
-    </h1>
-
-    <p class="hero-sub">
-      One script. <strong>Every unfair advantage.</strong> Instant steal, auto PvP, infinite jump, brainrot movement &mdash; all in one seamlessly updated package.
-    </p>
-
-    <div class="hero-cta">
-      <a href="#product" class="btn-main">
-        Get Nova Script →
-      </a>
-      <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-ghost">
-        ☎ Join Discord
-      </a>
+    <div class="stat">
+      <div class="stat-n">2</div>
+      <div class="stat-l">SCRIPTS</div>
     </div>
-
-    <div class="trust-bar">
-      <div class="trust-item">
-        <div class="trust-num">10<span>K+</span></div>
-        <div class="trust-label">Players</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-item">
-        <div class="trust-num">99<span>%</span></div>
-        <div class="trust-label">Undetected</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-item">
-        <div class="trust-num">Weekly</div>
-        <div class="trust-label">Updates</div>
-      </div>
-      <div class="trust-divider"></div>
-      <div class="trust-item">
-        <div class="trust-num">24<span>/7</span></div>
-        <div class="trust-label">Support</div>
-      </div>
+    <div class="stat">
+      <div class="stat-n">99<span>%</span></div>
+      <div class="stat-l">UNDETECTED</div>
+    </div>
+    <div class="stat">
+      <div class="stat-n">24<span>/7</span></div>
+      <div class="stat-l">SUPPORT</div>
     </div>
   </div>
 </section>
 
-<!-- MARQUEE -->
-<div style="padding: 0 48px; overflow: hidden; background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
-  <div class="marquee-track" style="padding: 18px 0;">
-    <div class="marquee-item"><span class="m-dot"></span> INSTANT STEAL</div>
-    <div class="marquee-item"><span class="m-dot"></span> AUTO PVP</div>
-    <div class="marquee-item"><span class="m-dot"></span> INFINITE JUMP</div>
-    <div class="marquee-item"><span class="m-dot"></span> BRAINROT MOVEMENT</div>
-    <div class="marquee-item"><span class="m-dot"></span> WEEKLY CHECKS</div>
-    <div class="marquee-item"><span class="m-dot"></span> UNDETECTED</div>
-    <div class="marquee-item"><span class="m-dot"></span> INSTANT DELIVERY</div>
-    <div class="marquee-item"><span class="m-dot"></span> INSTANT STEAL</div>
-    <div class="marquee-item"><span class="m-dot"></span> AUTO PVP</div>
-    <div class="marquee-item"><span class="m-dot"></span> INFINITE JUMP</div>
-    <div class="marquee-item"><span class="m-dot"></span> BRAINROT MOVEMENT</div>
-    <div class="marquee-item"><span class="m-dot"></span> WEEKLY CHECKS</div>
-    <div class="marquee-item"><span class="m-dot"></span> UNDETECTED</div>
-    <div class="marquee-item"><span class="m-dot"></span> INSTANT DELIVERY</div>
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <div class="ticker-item"><span class="ti-sep">◆</span> NOVA SCRIPT</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> BK HUB</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> INSTANT STEAL</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> AUTO PVP</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> BRAINROT MOVEMENT</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> PETS FINDER</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> UNDETECTED</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> WEEKLY UPDATES</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> 100+ MEMBERS</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> INFINITE JUMP</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> NOVA SCRIPT</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> BK HUB</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> INSTANT STEAL</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> AUTO PVP</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> BRAINROT MOVEMENT</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> PETS FINDER</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> UNDETECTED</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> WEEKLY UPDATES</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> 100+ MEMBERS</div>
+    <div class="ticker-item"><span class="ti-sep">◆</span> INFINITE JUMP</div>
   </div>
 </div>
 
-<!-- PRODUCT -->
-<section class="section" id="product">
-  <div class="section-label">001 — The Script</div>
-  <h2 class="section-title">Nova Script<br><span class="muted">One Tool. Total Control.</span></h2>
+<!-- PRODUCTS -->
+<section class="section" id="products">
+  <div class="sec-label">001 — THE SCRIPTS</div>
+  <h2 class="sec-h">Two Scripts.<br><span class="dim">Limitless Edge.</span></h2>
+  <p class="sec-sub">Each script is built for a different play style — together they cover every angle of the game.</p>
 
-  <div class="product-wrapper">
-    <div class="product-card">
-      <div class="card-top-accent"></div>
-      <div class="card-inner">
-        <div class="card-header">
-          <div class="card-badges">
-            <span class="tag tag-purple">⚡ Nova Script</span>
-            <span class="tag tag-green">✓ Undetected</span>
-            <span class="tag tag-orange">🔥 Trending</span>
+  <div class="products-grid">
+
+    <!-- NOVA SCRIPT -->
+    <div class="pcard pcard-nova">
+      <div class="pcard-accent"></div>
+      <div class="pcard-orb"></div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div class="pcard-icon-bg">
+              <span class="pcard-icon">⚡</span>
+            </div>
+            <div class="pcard-meta">
+              <div class="pcard-name">Nova Script</div>
+              <div class="tag-row">
+                <span class="tag tag-main">⚡ Combat</span>
+                <span class="tag tag-live">✓ Undetected</span>
+                <span class="tag tag-main">🔥 Popular</span>
+              </div>
+            </div>
           </div>
-          <div class="card-price-area">
-            <div class="price"><sup>€</sup>9<span style="font-size:22px;letter-spacing:-1px;">.99</span></div>
-            <div class="price-note">one-time purchase</div>
+          <div class="pcard-price-box">
+            <div class="pcard-price">$9.99</div>
+            <div class="pcard-price-note">one-time</div>
           </div>
         </div>
 
-        <div class="card-name">Nova <span>Script</span></div>
-        <p class="card-desc">
-          Built for the players who don't lose. Nova Script is the most aggressive, polished, and consistently updated Roblox script on the market. Steal items before anyone blinks, fight on autopilot, jump when physics says no — and look absolutely unhinged while doing it. This is brainrot, engineered.
+        <p class="pcard-desc">
+          The most aggressive combat script on the market. Instant steal, auto PvP, infinite jump, and chaotic brainrot movement — all in one seamlessly updated package. Built for players who don't lose.
         </p>
 
-        <div class="features-list">
-          <div class="feature">
-            <div class="feature-icon-box">⚡</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Instant Steal</div>
-              <div class="feature-sub">Snatch items the moment they spawn. Zero delay, zero competition.</div>
+        <div class="card-update">
+          <div class="cup-dot"></div>
+          <div class="cup-text">Last update: Feb 2025 — New brainrot patterns + auto-dodge system added</div>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat">
+            <div class="feat-icon">⚡</div>
+            <div>
+              <div class="feat-t">Instant Steal</div>
+              <div class="feat-s">Snatch items the moment they spawn. Zero delay.</div>
             </div>
           </div>
-          <div class="feature">
-            <div class="feature-icon-box">⚔️</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Auto PvP</div>
-              <div class="feature-sub">Locks onto enemies and destroys them automatically. You just watch.</div>
+          <div class="feat">
+            <div class="feat-icon">⚔️</div>
+            <div>
+              <div class="feat-t">Auto PvP</div>
+              <div class="feat-s">Locks on and destroys enemies automatically.</div>
             </div>
           </div>
-          <div class="feature">
-            <div class="feature-icon-box">🚀</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Infinite Jump</div>
-              <div class="feature-sub">Gravity is a suggestion. Jump forever, reach anywhere, escape anything.</div>
+          <div class="feat">
+            <div class="feat-icon">🚀</div>
+            <div>
+              <div class="feat-t">Infinite Jump</div>
+              <div class="feat-s">Gravity is a suggestion. Jump forever.</div>
             </div>
           </div>
-          <div class="feature">
-            <div class="feature-icon-box">🧠</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Brainrot Movement</div>
-              <div class="feature-sub">Erratic, unpredictable, chaotic — impossible to target or counter.</div>
+          <div class="feat">
+            <div class="feat-icon">🧠</div>
+            <div>
+              <div class="feat-t">Brainrot Movement</div>
+              <div class="feat-s">Erratic & unpredictable — impossible to target.</div>
             </div>
           </div>
-          <div class="feature">
-            <div class="feature-icon-box">🔄</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Weekly Updates</div>
-              <div class="feature-sub">New features and patches pushed every week. Never falls behind.</div>
+          <div class="feat">
+            <div class="feat-icon">🔄</div>
+            <div>
+              <div class="feat-t">Weekly Updates</div>
+              <div class="feat-s">New features every week. You paid once.</div>
             </div>
           </div>
-          <div class="feature">
-            <div class="feature-icon-box">🛡️</div>
-            <div class="feature-text-box">
-              <div class="feature-title">Anti-Detection Checks</div>
-              <div class="feature-sub">Regular integrity checks keep Nova Script invisible to every system.</div>
+          <div class="feat">
+            <div class="feat-icon">🛡️</div>
+            <div>
+              <div class="feat-t">Anti-Detection</div>
+              <div class="feat-s">Regular checks. Stays invisible to every system.</div>
             </div>
           </div>
         </div>
 
-        <div class="update-ticker">
-          <div class="ticker-dot"></div>
-          <div class="ticker-text">Last update: Feb 2025 — Added new brainrot movement patterns + auto-dodge system</div>
-        </div>
+        <div class="pcard-divider"></div>
 
-        <div class="card-divider" style="margin-top: 28px;"></div>
-
-        <div class="card-footer-row">
-          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="buy-btn">
-            Get Nova Script — €9.99
+        <div class="pcard-footer">
+          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="pbuy">
+            Get Nova Script — $9.99
           </a>
-          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="discord-side">
-            ☎ Discord
+          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="pdisc">
+            💬 Discord
           </a>
         </div>
       </div>
     </div>
+
+    <!-- BK HUB -->
+    <div class="pcard pcard-bk">
+      <div class="pcard-accent"></div>
+      <div class="pcard-orb"></div>
+      <div class="pcard-body">
+        <div class="pcard-top">
+          <div style="display:flex;gap:14px;align-items:flex-start;">
+            <div class="pcard-icon-bg">
+              <span class="pcard-icon">🐾</span>
+            </div>
+            <div class="pcard-meta">
+              <div class="pcard-name">BK Hub</div>
+              <div class="tag-row">
+                <span class="tag tag-main">🐾 Pets</span>
+                <span class="tag tag-live">✓ Undetected</span>
+                <span class="tag tag-main">👑 Best-in-Class</span>
+              </div>
+            </div>
+          </div>
+          <div class="pcard-price-box">
+            <div class="pcard-price">$9.99</div>
+            <div class="pcard-price-note">one-time</div>
+          </div>
+        </div>
+
+        <p class="pcard-desc">
+          The best pet finder & steal script ever made. BK Hub finds, tracks and steals any pet before anyone else can react. 100+ satisfied members, constant updates, and the most chaotic brainrot movement in the game.
+        </p>
+
+        <div class="card-update">
+          <div class="cup-dot"></div>
+          <div class="cup-text">Last update: Mar 2025 — Improved pet radar range + new steal algorithm</div>
+        </div>
+
+        <div class="feat-grid">
+          <div class="feat">
+            <div class="feat-icon">🐾</div>
+            <div>
+              <div class="feat-t">Pet Finder</div>
+              <div class="feat-s">Detects & tracks every rare pet on the map instantly.</div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">⚡</div>
+            <div>
+              <div class="feat-t">Instant Pet Steal</div>
+              <div class="feat-s">Grabs pets before anyone else blinks. Every time.</div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🧠</div>
+            <div>
+              <div class="feat-t">Brainrot Movement</div>
+              <div class="feat-s">The most chaotic movement ever built into a script.</div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">🛡️</div>
+            <div>
+              <div class="feat-t">100% Undetected</div>
+              <div class="feat-s">Never detected. 100+ happy members can confirm.</div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">📅</div>
+            <div>
+              <div class="feat-t">Frequent Updates</div>
+              <div class="feat-s">Regular patches keep every feature working perfectly.</div>
+            </div>
+          </div>
+          <div class="feat">
+            <div class="feat-icon">👥</div>
+            <div>
+              <div class="feat-t">Active Community</div>
+              <div class="feat-s">100+ members. Tips, configs & support around the clock.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pcard-divider"></div>
+
+        <div class="pcard-footer">
+          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="pbuy">
+            Get BK Hub — $9.99
+          </a>
+          <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="pdisc">
+            💬 Discord
+          </a>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 <!-- WHY -->
-<section class="section" id="why" style="padding-top: 0;">
-  <div class="section-label">002 — Why Nova Hub</div>
-  <h2 class="section-title">Built Different.<br><span class="muted">On Every Level.</span></h2>
+<div class="why-section" id="why">
+  <div class="why-inner">
+    <div class="sec-label">002 — WHY NOVA HUB</div>
+    <h2 class="sec-h">Built Different.<br><span class="dim">On Every Level.</span></h2>
 
-  <div class="why-grid">
-    <div class="why-card">
-      <span class="why-icon">🔒</span>
-      <div class="why-title">Stays Undetected</div>
-      <p class="why-text">Our team monitors every anti-cheat update in real time. Patches go live before most people even hear about the threat.</p>
-    </div>
-    <div class="why-card">
-      <span class="why-icon">⚡</span>
-      <div class="why-title">Instant Access</div>
-      <p class="why-text">Automated delivery. Purchase through Discord and get your key within seconds. No waiting, no verification queues.</p>
-    </div>
-    <div class="why-card">
-      <span class="why-icon">📅</span>
-      <div class="why-title">Weekly Updates</div>
-      <p class="why-text">New features, new movement patterns, new exploits — shipped every week. You paid once. You get everything forever.</p>
-    </div>
-    <div class="why-card">
-      <span class="why-icon">🛠️</span>
-      <div class="why-title">24/7 Support</div>
-      <p class="why-text">Active Discord support team. Average response under 10 minutes, any time of day or night. Real people, real help.</p>
-    </div>
-    <div class="why-card">
-      <span class="why-icon">💳</span>
-      <div class="why-title">Secure & Private</div>
-      <p class="why-text">All transactions handled through encrypted channels. Your identity and payment details stay completely private.</p>
-    </div>
-    <div class="why-card">
-      <span class="why-icon">👥</span>
-      <div class="why-title">Active Community</div>
-      <p class="why-text">Join 10,000+ players in the Nova Hub Discord. Share configs, get tips, and get updates the moment they drop.</p>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">01</div>
+        <span class="why-icon">🔒</span>
+        <div class="why-title">Always Undetected</div>
+        <p class="why-text">Our team monitors every anti-cheat update in real time. Patches go live before anyone hears about the threat. Zero bans across both scripts.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">⚡</span>
+        <div class="why-num">02</div>
+        <div class="why-title">Instant Access</div>
+        <p class="why-text">Automated delivery through Discord. Purchase and get your key within seconds. No waiting, no verification queues, no hassle.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">03</div>
+        <span class="why-icon">📅</span>
+        <div class="why-title">Frequent Updates</div>
+        <p class="why-text">New features, patterns, and exploits shipped regularly across both Nova Script and BK Hub. Pay once. Get everything forever.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">04</div>
+        <span class="why-icon">🛠️</span>
+        <div class="why-title">24/7 Support</div>
+        <p class="why-text">Active Discord support team. Average response under 10 minutes, any time of day or night. Real people, real solutions.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">05</div>
+        <span class="why-icon">💳</span>
+        <div class="why-title">Secure & Private</div>
+        <p class="why-text">All transactions handled through encrypted channels. Your identity and payment details stay completely private — always.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">06</div>
+        <span class="why-icon">👥</span>
+        <div class="why-title">Thriving Community</div>
+        <p class="why-text">Join 10,000+ players in the Nova Hub Discord. Share configs, get tips, and receive updates the moment they drop.</p>
+      </div>
     </div>
   </div>
-</section>
+</div>
 
 <!-- REVIEWS -->
-<section class="section" id="reviews" style="padding-top: 0;">
-  <div class="section-label">003 — Reviews</div>
-  <h2 class="section-title">10,000 Players.<br><span class="muted">All Winners.</span></h2>
+<section class="section" id="reviews" style="padding-top: 110px;">
+  <div class="sec-label">003 — REVIEWS</div>
+  <h2 class="sec-h">10,000 Players.<br><span class="dim">All Winners.</span></h2>
 
   <div class="reviews-grid">
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"The instant steal is absolutely broken. I had items before anyone even realized the round started. Best €9.99 I've ever spent."</p>
-      <div class="review-author">
-        <div class="avatar">K</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"Nova Script's instant steal is absolutely broken. I had items before anyone realized the round started. Best $9.99 I've ever spent."</p>
+      <div class="rev-author">
+        <div class="rev-av">K</div>
         <div>
-          <div class="author-name">KillSwitch_99</div>
-          <div class="author-tag">// Verified Buyer</div>
+          <div class="rev-name">KillSwitch_99</div>
+          <div class="rev-tag">// Nova Script · Verified</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"Auto PvP is genuinely unfair in the best way. I went 47-0 and people started leaving the lobby. Absolutely elite script."</p>
-      <div class="review-author">
-        <div class="avatar">S</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"BK Hub found a rare pet I'd been hunting for weeks — in literally 3 seconds. The pet finder is on another level, nothing compares."</p>
+      <div class="rev-author">
+        <div class="rev-av bk-av">B</div>
         <div>
-          <div class="author-name">ShadowByte</div>
-          <div class="author-tag">// Nova Hub Member</div>
+          <div class="rev-name">BlazeRunner</div>
+          <div class="rev-tag">// BK Hub · Verified</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"Been using Nova for 4 months. Zero bans. The weekly updates actually hit — they added new brainrot patterns and it's insane."</p>
-      <div class="review-author">
-        <div class="avatar">R</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"4 months using Nova Script. Zero bans. The weekly updates actually slap — they keep adding insane brainrot movement patterns."</p>
+      <div class="rev-author">
+        <div class="rev-av">R</div>
         <div>
-          <div class="author-name">RedLine_X</div>
-          <div class="author-tag">// 4 Month Customer</div>
+          <div class="rev-name">RedLine_X</div>
+          <div class="rev-tag">// Nova Script · 4 Months</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"The brainrot movement makes me literally untargetable. People think I'm lagging but I'm just running Nova Script lmao."</p>
-      <div class="review-author">
-        <div class="avatar">V</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"BK Hub's brainrot movement makes me literally untargetable while I steal pets. People think I'm lagging. I'm just built different lmao."</p>
+      <div class="rev-author">
+        <div class="rev-av bk-av">V</div>
         <div>
-          <div class="author-name">Vortex_Pro</div>
-          <div class="author-tag">// Verified Buyer</div>
+          <div class="rev-name">Vortex_Pro</div>
+          <div class="rev-tag">// BK Hub · Verified</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"Infinite jump + instant steal combo is just dirty. Discord support helped me set everything up in 5 minutes. Huge W."</p>
-      <div class="review-author">
-        <div class="avatar">N</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"Bought both scripts in one go. Nova for PvP, BK Hub for pets. Absolutely destroyed every lobby I've been in. Huge W, no cap."</p>
+      <div class="rev-author">
+        <div class="rev-av">N</div>
         <div>
-          <div class="author-name">NightFall_</div>
-          <div class="author-tag">// Verified Buyer</div>
+          <div class="rev-name">NightFall_</div>
+          <div class="rev-tag">// Both Scripts · Verified</div>
         </div>
       </div>
     </div>
-    <div class="review">
-      <div class="stars">★★★★★</div>
-      <p class="review-text">"Cheapest and most powerful script I've used. The updates never stop coming. Nova Hub is on a different level fr fr."</p>
-      <div class="review-author">
-        <div class="avatar">G</div>
+    <div class="rev">
+      <div class="rev-stars">★★★★★</div>
+      <p class="rev-text">"The support Discord is incredibly fast. Got both scripts set up in under 5 minutes. BK Hub alone is worth 10x the price fr fr."</p>
+      <div class="rev-author">
+        <div class="rev-av bk-av">G</div>
         <div>
-          <div class="author-name">GhostTrace</div>
-          <div class="author-tag">// Verified Buyer</div>
+          <div class="rev-name">GhostTrace</div>
+          <div class="rev-tag">// BK Hub · Verified</div>
         </div>
       </div>
     </div>
@@ -1037,25 +1048,31 @@
 </section>
 
 <!-- CTA -->
-<div class="cta">
-  <h2 class="cta-title">Ready to<br><span>dominate?</span></h2>
-  <p class="cta-sub">Join 10,000+ players who already play on a different level.</p>
-  <div style="display:flex; gap: 12px; justify-content: center;">
-    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-main" style="font-size: 16px; padding: 16px 40px;">
-      Get Nova Script — €9.99
+<div class="cta-section">
+  <div class="cta-orb"></div>
+  <div class="cta-orb2"></div>
+  <h2 class="cta-h">
+    <em>Nova Script.</em><br>
+    <span class="bk-em">BK Hub.</span><br>
+    No Competition.
+  </h2>
+  <p class="cta-p">Join 10,000+ players who already play on a completely different level.</p>
+  <div class="cta-btns">
+    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-primary" style="font-size:15px;padding:16px 36px;">
+      Get Both Scripts →
     </a>
-    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-ghost" style="font-size: 15px;">
-      ☎ Join Discord
+    <a href="https://discord.gg/QaDbxHezMs" target="_blank" class="btn-outline">
+      💬 Join Discord
     </a>
   </div>
 </div>
 
 <!-- FOOTER -->
 <footer>
-  <div class="footer-logo">
-    <div class="logo-dot"></div>
+  <a href="#" class="footer-logo">
+    <div class="logo-badge">N</div>
     Nova Hub
-  </div>
+  </a>
   <div class="footer-links">
     <a href="https://discord.gg/QaDbxHezMs" target="_blank">Discord</a>
     <a href="#">Terms of Service</a>
@@ -1066,53 +1083,44 @@
 </footer>
 
 <script>
-  // CURSOR
-  const dot = document.getElementById('cursorDot');
-  const ring = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
+// ── CURSOR ──
+const dot = document.getElementById('cur-dot');
+const ring = document.getElementById('cur-ring');
+let mx=0,my=0,rx=0,ry=0;
 
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    dot.style.left = mx + 'px';
-    dot.style.top = my + 'px';
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  dot.style.left = mx+'px'; dot.style.top = my+'px';
+});
+
+(function loop(){
+  rx += (mx-rx)*0.1; ry += (my-ry)*0.1;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(loop);
+})();
+
+document.querySelectorAll('a,button,.pcard,.why-card,.rev').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{
+    ring.style.width='44px'; ring.style.height='44px';
+    ring.style.borderColor='rgba(139,92,246,.6)';
+    dot.style.transform='translate(-50%,-50%) scale(2)';
   });
-
-  (function animate() {
-    rx += (mx - rx) * 0.1;
-    ry += (my - ry) * 0.1;
-    ring.style.left = rx + 'px';
-    ring.style.top = ry + 'px';
-    requestAnimationFrame(animate);
-  })();
-
-  document.querySelectorAll('a, button, .product-card, .why-card, .review').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      dot.style.transform = 'translate(-50%,-50%) scale(2.5)';
-      ring.style.transform = 'translate(-50%,-50%) scale(1.6)';
-      ring.style.borderColor = 'rgba(124,109,250,0.7)';
-    });
-    el.addEventListener('mouseleave', () => {
-      dot.style.transform = 'translate(-50%,-50%) scale(1)';
-      ring.style.transform = 'translate(-50%,-50%) scale(1)';
-      ring.style.borderColor = 'rgba(124,109,250,0.4)';
-    });
+  el.addEventListener('mouseleave',()=>{
+    ring.style.width='32px'; ring.style.height='32px';
+    ring.style.borderColor='rgba(139,92,246,.35)';
+    dot.style.transform='translate(-50%,-50%) scale(1)';
   });
+});
 
-  // SCROLL ANIMATIONS
-  const observer = new IntersectionObserver(entries => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.1 });
+// ── SCROLL ANIMATIONS ──
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('vis'); obs.unobserve(e.target); }});
+},{threshold:0.1});
 
-  document.querySelectorAll('.why-card, .review').forEach((el, i) => {
-    el.style.animationDelay = (i * 0.07) + 's';
-    observer.observe(el);
-  });
+document.querySelectorAll('.why-card,.rev').forEach((el,i)=>{
+  el.style.animationDelay = (i*0.07)+'s';
+  obs.observe(el);
+});
 </script>
-
 </body>
 </html>
