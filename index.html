@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ninebot E2 Pro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0d0d0f;--surface:#18181c;--surface2:#222228;--border:#2e2e38;
+  --text:#f0f0f2;--muted:#888;--amber:#f0a500;--amber-dim:#4a3300;
+  --red:#e84040;--red-dim:#3a0808;--green:#2ecc71;--green-dim:#0a3020;
+  --blue:#4da6ff;--blue-dim:#0a2040;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding:0 0 3rem;}
+.topbar{display:flex;align-items:center;gap:12px;padding:16px 16px 12px;border-bottom:1px solid var(--border);}
+.logo{width:38px;height:38px;border-radius:50%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo svg{width:20px;height:20px;fill:#fff;}
+.topbar-info{flex:1;}
+.topbar-title{font-size:16px;font-weight:600;}
+.topbar-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+.badge{font-size:11px;padding:4px 10px;border-radius:99px;border:1px solid var(--border);color:var(--muted);background:var(--surface);}
+.badge.connected{border-color:#1a5c30;color:var(--green);background:var(--green-dim);}
+.badge.disconnected{border-color:#5c1a1a;color:var(--red);background:var(--red-dim);}
+.section{margin:12px 12px 0;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:14px 16px;}
+.section-label{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;font-weight:500;}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 12px 0;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center;}
+.stat-val{font-size:22px;font-weight:600;color:var(--text);}
+.stat-lbl{font-size:11px;color:var(--muted);margin-top:3px;}
+.connect-btn{width:100%;padding:14px;border-radius:12px;border:none;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;transition:all .15s;}
+.connect-btn.idle{background:#1a1a2e;color:var(--blue);border:1px solid var(--blue);}
+.connect-btn.connecting{background:#0a2a0a;color:var(--green);border:1px solid var(--green);}
+.connect-btn.disconnecting{background:#2a0a0a;color:var(--red);border:1px solid var(--red);}
+.connect-btn:active{transform:scale(0.98);}
+.mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.mode-btn{padding:14px 4px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);font-size:13px;font-weight:500;cursor:pointer;text-align:center;color:var(--muted);transition:all .15s;}
+.mode-btn .icon{font-size:22px;display:block;margin-bottom:5px;}
+.mode-btn .kmh{font-size:11px;margin-top:3px;color:#555;}
+.mode-btn:active{transform:scale(0.96);}
+.mode-btn.active{background:#1a1a2e;border-color:var(--blue);color:var(--blue);}
+.mode-btn.active .kmh{color:#3a6a9a;}
+.speed-big{text-align:center;padding:8px 0 16px;}
+.speed-num{font-size:64px;font-weight:700;color:var(--text);line-height:1;}
+.speed-unit{font-size:13px;color:var(--muted);margin-top:4px;}
+.speed-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.speed-side{font-size:12px;color:var(--muted);min-width:32px;text-align:center;}
+input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--blue);cursor:pointer;border:3px solid var(--bg);}
+.quick-speeds{display:flex;gap:6px;margin-top:10px;}
+.qbtn{flex:1;padding:10px 4px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;text-align:center;transition:all .15s;}
+.qbtn:active{transform:scale(0.95);}
+.qbtn.active{border-color:var(--amber);color:var(--amber);background:var(--amber-dim);}
+.blinker-row{display:flex;gap:10px;}
+.bln-btn{flex:1;padding:18px 8px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);transition:all .15s;}
+.bln-btn:active{transform:scale(0.96);}
+.bln-btn svg{width:22px;height:22px;fill:currentColor;flex-shrink:0;}
+.bln-btn.warn-center{flex:0.6;flex-direction:column;gap:4px;font-size:12px;}
+.bln-btn.active-l,.bln-btn.active-r{border-color:var(--amber);color:var(--amber);background:var(--amber-dim);animation:blinkbg .6s infinite;}
+.bln-btn.active-w{border-color:var(--red);color:var(--red);background:var(--red-dim);animation:blinkbg .5s infinite;}
+@keyframes blinkbg{0%,100%{opacity:1}50%{opacity:.5}}
+.log-box{background:var(--surface2);border-radius:10px;padding:10px;font-family:monospace;font-size:11px;max-height:150px;overflow-y:auto;margin-top:8px;border:1px solid var(--border);}
+.log-line{line-height:1.7;color:var(--muted);}
+.log-line.ok{color:#2ecc71;}
+.log-line.err{color:#e84040;}
+.log-line.info{color:#4da6ff;}
+.log-line.rx{color:#c084fc;}
+.batt-bar{height:8px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:8px;}
+.batt-fill{height:100%;border-radius:4px;background:var(--green);transition:width .5s;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M17 4H7c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-5 14c-.83 0-1.5-.67-1.5-1.5S11.17 15 12 15s1.5.67 1.5 1.5S12.83 18 12 18zm3-7H9V7h6v4z"/></svg>
+  </div>
+  <div class="topbar-info">
+    <div class="topbar-title">Ninebot E2 Pro</div>
+    <div class="topbar-sub" id="device-name">Nicht verbunden</div>
+  </div>
+  <span class="badge disconnected" id="conn-badge">Getrennt</span>
+</div>
+
+<div class="section" style="margin-top:12px;">
+  <button class="connect-btn idle" id="conn-btn" onclick="toggleConnect()">Bluetooth verbinden</button>
+  <div class="log-box" id="log-box">
+    <div class="log-line info">Bereit. Tippe auf "Bluetooth verbinden".</div>
+  </div>
+</div>
+
+<div class="stat-row">
+  <div class="stat"><div class="stat-val" id="s-speed">—</div><div class="stat-lbl">km/h</div></div>
+  <div class="stat"><div class="stat-val" id="s-batt">—</div><div class="stat-lbl">Akku %</div></div>
+  <div class="stat"><div class="stat-val" id="s-limit">—</div><div class="stat-lbl">Limit km/h</div></div>
+</div>
+
+<div class="section">
+  <div class="section-label">Fahrmodus</div>
+  <div class="mode-grid">
+    <button class="mode-btn" id="mode-eco" onclick="setMode('eco')">
+      <span class="icon">🌿</span>Eco<div class="kmh">15 km/h</div>
+    </button>
+    <button class="mode-btn active" id="mode-drive" onclick="setMode('drive')">
+      <span class="icon">🚗</span>Drive<div class="kmh">25 km/h</div>
+    </button>
+    <button class="mode-btn" id="mode-sport" onclick="setMode('sport')">
+      <span class="icon">⚡</span>Sport<div class="kmh">32 km/h</div>
+    </button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Geschwindigkeitslimit</div>
+  <div class="speed-big">
+    <div class="speed-num" id="limit-display">25</div>
+    <div class="speed-unit">km/h Limit</div>
+  </div>
+  <div class="speed-row">
+    <span class="speed-side">15</span>
+    <input type="range" min="15" max="32" step="1" value="25" id="speed-slider" oninput="onSlider(this.value)" onchange="sendSpeedLimit(this.value)">
+    <span class="speed-side">32</span>
+  </div>
+  <div class="quick-speeds">
+    <button class="qbtn" onclick="setLimit(15)">15</button>
+    <button class="qbtn" onclick="setLimit(20)">20</button>
+    <button class="qbtn active" onclick="setLimit(25)">25</button>
+    <button class="qbtn" onclick="setLimit(30)">30</button>
+    <button class="qbtn" onclick="setLimit(32)">32</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Blinker &amp; Warnblinker</div>
+  <div class="blinker-row">
+    <button class="bln-btn" id="bln-left" onclick="toggleBlinker('left')">
+      <svg viewBox="0 0 24 24"><path d="M20 12l-8-8v5H4v6h8v5z"/></svg>Links
+    </button>
+    <button class="bln-btn warn-center" id="bln-warn" onclick="toggleBlinker('warn')">
+      <svg viewBox="0 0 24 24" style="width:20px;height:20px;fill:currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>Warn
+    </button>
+    <button class="bln-btn" id="bln-right" onclick="toggleBlinker('right')">
+      Rechts<svg viewBox="0 0 24 24"><path d="M4 12l8 8V15h8V9H12V4z"/></svg>
+    </button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-label">Akku</div>
+  <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);">
+    <span>Ladestand</span><span id="batt-text" style="color:var(--text);font-weight:500;">—</span>
+  </div>
+  <div class="batt-bar"><div class="batt-fill" id="batt-fill" style="width:0%"></div></div>
+</div>
+
+<script>
+const NB_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const NB_TX     = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const NB_RX     = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+const DEVICE_SN = 'N2ADA2222A1004';
+
+let device=null,txChar=null,rxChar=null,connected=false,authed=false;
+let blinkerState={left:false,right:false,warn:false};
+let rxBuf=[];
+
+function log(msg,type=''){
+  const box=document.getElementById('log-box');
+  const d=document.createElement('div');
+  d.className='log-line '+(type||'');
+  const t=new Date().toLocaleTimeString('de',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  d.textContent='['+t+'] '+msg;
+  box.appendChild(d);
+  box.scrollTop=box.scrollHeight;
+  if(box.children.length>80)box.removeChild(box.children[0]);
+}
+
+function hex(arr){return Array.from(arr).map(b=>b.toString(16).padStart(2,'0')).join(' ');}
+
+function crc16(buf,start,len){
+  let s=0;
+  for(let i=start;i<start+len;i++)s+=buf[i];
+  return (s^0xFFFF)&0xFFFF;
+}
+
+function buildPkt(cmd,payload){
+  const p=payload||[];
+  const len=p.length+2;
+  const buf=[0x55,0xAA,len,0x20,cmd,...p];
+  const c=crc16(buf,2,buf.length-2);
+  buf.push(c&0xFF,(c>>8)&0xFF);
+  return new Uint8Array(buf);
+}
+
+async function writePkt(pkt){
+  if(!txChar)return;
+  const CHUNK=20;
+  for(let i=0;i<pkt.length;i+=CHUNK){
+    await txChar.writeValueWithoutResponse(pkt.slice(i,i+CHUNK));
+    await delay(30);
+  }
+}
+
+function delay(ms){return new Promise(r=>setTimeout(r,ms));}
+
+async function sendCmd(cmd,payload){
+  const pkt=buildPkt(cmd,payload||[]);
+  log('TX: '+hex(pkt));
+  await writePkt(pkt);
+}
+
+// --- Auth (Protocol 1 / unencrypted handshake for older E2 firmware) ---
+// PRE_COMM: ask for challenge
+// The E2 Pro 1004 with fw ~1.x uses the simpler SN-based auth
+async function doAuth(){
+  log('Auth starten...','info');
+  // Step 1: send PRE_COMM (0x5B) to get challenge
+  await sendCmd(0x5B,[0x00,0x00]);
+  await delay(500);
+  // Step 2: build key from SN
+  const snBytes=new TextEncoder().encode(DEVICE_SN);
+  // derive 16-byte key: SHA1(SN)[0..15] padded
+  const hashBuf=await crypto.subtle.digest('SHA-1',snBytes);
+  const key=new Uint8Array(hashBuf).slice(0,16);
+  log('Key: '+hex(key),'info');
+  // Step 3: send SET_PWD (0x5C) with key
+  await sendCmd(0x5C,Array.from(key));
+  await delay(300);
+  log('Auth gesendet, warte auf Antwort...','info');
+}
+
+function parseRx(data){
+  const b=new Uint8Array(data.buffer||data);
+  log('RX: '+hex(b),'rx');
+  if(b.length<6)return;
+  if(b[0]===0x55&&b[1]===0xAA){
+    const cmd=b[4];
+    // Auth OK responses
+    if(cmd===0x5B||cmd===0x5C||cmd===0x5D){
+      if(!authed){authed=true;log('Auth OK!','ok');afterAuth();}
+      return;
+    }
+    // Status response cmd 0x62
+    if(cmd===0x62&&b.length>=16){
+      const spd=((b[6]|(b[7]<<8))/1000*3.6);
+      const batt=b[14]||0;
+      document.getElementById('s-speed').textContent=Math.round(spd);
+      document.getElementById('s-batt').textContent=batt;
+      document.getElementById('batt-text').textContent=batt+'%';
+      document.getElementById('batt-fill').style.width=batt+'%';
+    }
+    // Speed limit read response 0x64
+    if(cmd===0x64&&b.length>=10){
+      const lim=Math.round((b[6]|(b[7]<<8))/1000*3.6);
+      if(lim>0&&lim<=35){
+        document.getElementById('s-limit').textContent=lim;
+        document.getElementById('limit-display').textContent=lim;
+        document.getElementById('speed-slider').value=lim;
+        updateQBtns(lim);
+        log('Limit gelesen: '+lim+' km/h','ok');
+      }
+    }
+  }
+}
+
+async function afterAuth(){
+  log('Lese Status...','info');
+  await delay(200);
+  // read speed limit register 0x64
+  await sendCmd(0x64,[0x02,0x00]);
+  await delay(300);
+  // read general status
+  await sendCmd(0x61,[0x20,0x00,0x20,0x00]);
+  // poll every 2s
+  setInterval(async()=>{
+    if(connected&&authed)await sendCmd(0x61,[0x20,0x00,0x20,0x00]);
+  },2000);
+}
+
+async function toggleConnect(){
+  if(connected){doDisconnect();}else{await doConnect();}
+}
+
+async function doConnect(){
+  const btn=document.getElementById('conn-btn');
+  btn.textContent='Verbinde…';btn.className='connect-btn connecting';
+  try{
+    log('Suche Gerät...','info');
+    device=await navigator.bluetooth.requestDevice({
+      filters:[{namePrefix:'NineBot'},{namePrefix:'Ninebot'},{namePrefix:'E2'},{services:[NB_SERVICE]}],
+      optionalServices:[NB_SERVICE]
+    });
+    device.addEventListener('gattserverdisconnected',onDisc);
+    const server=await device.gatt.connect();
+    log('GATT verbunden','ok');
+    const svc=await server.getPrimaryService(NB_SERVICE);
+    txChar=await svc.getCharacteristic(NB_TX);
+    rxChar=await svc.getCharacteristic(NB_RX);
+    await rxChar.startNotifications();
+    rxChar.addEventListener('characteristicvaluechanged',e=>parseRx(e.target.value));
+    log('Verbunden: '+device.name,'ok');
+    setUI(true,device.name);
+    await delay(400);
+    await doAuth();
+  }catch(e){
+    log('Fehler: '+e.message,'err');
+    btn.textContent='Bluetooth verbinden';btn.className='connect-btn idle';
+  }
+}
+
+function doDisconnect(){
+  if(device&&device.gatt.connected)device.gatt.disconnect();
+  setUI(false);
+}
+function onDisc(){log('Getrennt','err');setUI(false);}
+
+function setUI(val,name){
+  connected=val;authed=val?authed:false;
+  const badge=document.getElementById('conn-badge');
+  const btn=document.getElementById('conn-btn');
+  document.getElementById('device-name').textContent=val?(name||'Verbunden'):'Nicht verbunden';
+  if(val){
+    badge.textContent='Verbunden';badge.className='badge connected';
+    btn.textContent='Trennen';btn.className='connect-btn disconnecting';
+  }else{
+    badge.textContent='Getrennt';badge.className='badge disconnected';
+    btn.textContent='Bluetooth verbinden';btn.className='connect-btn idle';
+    ['s-speed','s-batt','s-limit'].forEach(id=>document.getElementById(id).textContent='—');
+    document.getElementById('batt-text').textContent='—';
+    document.getElementById('batt-fill').style.width='0%';
+    txChar=null;rxChar=null;
+  }
+}
+
+const MODE_LIMITS={eco:15,drive:25,sport:32};
+const MODE_REG={eco:0x00,drive:0x01,sport:0x02};
+
+async function setMode(m){
+  ['eco','drive','sport'].forEach(x=>document.getElementById('mode-'+x).classList.remove('active'));
+  document.getElementById('mode-'+m).classList.add('active');
+  setLimit(MODE_LIMITS[m]);
+  if(!authed){log('Modus (offline): '+m);return;}
+  // mode register 0xF020 area — write speed mode
+  await sendCmd(0x65,[MODE_REG[m],0x00]);
+  log('Modus: '+m,'ok');
+}
+
+function onSlider(v){
+  document.getElementById('limit-display').textContent=v;
+  updateQBtns(parseInt(v));
+}
+
+async function sendSpeedLimit(v){
+  v=parseInt(v);
+  document.getElementById('s-limit').textContent=v;
+  if(!authed){log('Limit (offline): '+v+' km/h');return;}
+  // speed limit in mm/s * 1000 = km/h * 1000/3.6
+  const mmps=Math.round(v*1000/3.6);
+  const lo=mmps&0xFF,hi=(mmps>>8)&0xFF;
+  await sendCmd(0x64,[0x02,0x00,lo,hi]);
+  log('Limit gesendet: '+v+' km/h','ok');
+}
+
+function setLimit(v){
+  v=parseInt(v);
+  document.getElementById('speed-slider').value=v;
+  document.getElementById('limit-display').textContent=v;
+  updateQBtns(v);
+  sendSpeedLimit(v);
+}
+
+function updateQBtns(v){
+  document.querySelectorAll('.qbtn').forEach(b=>b.classList.toggle('active',parseInt(b.textContent)===v));
+}
+
+const BLINK={left_on:[0x01,0x00],left_off:[0x00,0x00],right_on:[0x02,0x00],right_off:[0x00,0x00],warn_on:[0x03,0x00],warn_off:[0x00,0x00]};
+
+async function sendBlink(key){
+  if(!authed){log('Blinker (offline): '+key);return;}
+  await sendCmd(0x6C,BLINK[key]);
+  log('Blinker: '+key,'ok');
+}
+
+function toggleBlinker(side){
+  const was=blinkerState[side];
+  blinkerState={left:false,right:false,warn:false};
+  clearBlinkUI();
+  if(!was){
+    blinkerState[side]=true;
+    if(side==='left'){document.getElementById('bln-left').classList.add('active-l');sendBlink('left_on');}
+    else if(side==='right'){document.getElementById('bln-right').classList.add('active-r');sendBlink('right_on');}
+    else{
+      ['bln-left','bln-right','bln-warn'].forEach(id=>document.getElementById(id).classList.add('active-w'));
+      sendBlink('warn_on');
+    }
+  }else{
+    sendBlink(side==='warn'?'warn_off':side+'_off');
+  }
+}
+
+function clearBlinkUI(){
+  ['bln-left','bln-right','bln-warn'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.classList.remove('active-l','active-r','active-w');
+  });
+}
+</script>
+</body>
+</html>
